@@ -1,8 +1,8 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { getConfig } from '../config';
 import { logger } from '../utils/logger';
-import { createMCPClient } from '../mcp/client';
 import type { AgentRunOptions } from '../types';
+import { createMCPClient } from '../mcp/client';
 
 const MAX_ITERATIONS = 10; // safety ceiling — prevents runaway loops
 
@@ -136,7 +136,7 @@ async function executeToolCalls(
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-function extractText(content: Anthropic.ContentBlock[]): string {
+function extractText(content: Array<{ type: string; text?: string }>): string {
   return content
     .filter((block): block is Anthropic.TextBlock => block.type === 'text')
     .map((block) => block.text)
