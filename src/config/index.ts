@@ -2,7 +2,7 @@ import { config } from 'dotenv';
 
 export interface AppConfig {
   githubToken: string;
-  anthropicApiKey: string;
+  openrouterApiKey: string;
   defaultRepo?: string;
   defaultModel: string;
   logLevel: string;
@@ -16,7 +16,7 @@ export async function loadConfig(): Promise<AppConfig> {
   const missing: string[] = [];
 
   if (!process.env.GITHUB_TOKEN) missing.push('GITHUB_TOKEN');
-  if (!process.env.ANTHROPIC_API_KEY) missing.push('ANTHROPIC_API_KEY');
+  if (!process.env.OPENROUTER_API_KEY) missing.push('OPENROUTER_API_KEY');
 
   if (missing.length > 0) {
     throw new Error(
@@ -27,7 +27,7 @@ export async function loadConfig(): Promise<AppConfig> {
 
   _config = {
     githubToken: process.env.GITHUB_TOKEN!,
-    anthropicApiKey: process.env.ANTHROPIC_API_KEY!,
+    openrouterApiKey: process.env.OPENROUTER_API_KEY!,
     defaultRepo: process.env.DEFAULT_REPO,
     defaultModel: process.env.DEFAULT_MODEL ?? 'claude-sonnet-4-5',
     logLevel: process.env.LOG_LEVEL ?? 'info',

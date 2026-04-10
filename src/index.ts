@@ -23,7 +23,11 @@ async function main() {
       'GitHub repository (e.g. acme/api)',
       process.env.DEFAULT_REPO
     )
-    .option('--model <model>', 'Claude model to use', 'claude-sonnet-4-5')
+    .option(
+      '--model <model>',
+      'OpenRouter model ID to use',
+      'anthropic/claude-sonnet-4-5'
+    )
     .option('--debug', 'Enable debug logging', false);
 
   program.addCommand(askCommand());

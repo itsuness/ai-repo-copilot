@@ -21,8 +21,8 @@ export function askCommand(): Command {
           repo,
           model,
           systemPrompt: `You are an expert code assistant for the GitHub repository ${repo}.
-Use the search_repo tool to find relevant files, then read their contents via resources.
-Be concise and cite specific files and line numbers where relevant.`,
+            Use the search_repo tool to find relevant files, then read their contents via resources.
+            Be concise and cite specific files and line numbers where relevant.`,
           userMessage: question,
         });
 
