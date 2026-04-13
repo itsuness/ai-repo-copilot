@@ -3,6 +3,7 @@ import { config } from 'dotenv';
 export interface AppConfig {
   githubToken: string;
   openrouterApiKey: string;
+  geminiApiKey: string;
   defaultRepo?: string;
   defaultModel: string;
   logLevel: string;
@@ -28,6 +29,7 @@ export async function loadConfig(): Promise<AppConfig> {
   _config = {
     githubToken: process.env.GITHUB_TOKEN!,
     openrouterApiKey: process.env.OPENROUTER_API_KEY!,
+    geminiApiKey: process.env.GEMINI_API_KEY ?? '',
     defaultRepo: process.env.DEFAULT_REPO,
     defaultModel: process.env.DEFAULT_MODEL ?? 'claude-sonnet-4-5',
     logLevel: process.env.LOG_LEVEL ?? 'info',

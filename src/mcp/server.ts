@@ -2,6 +2,8 @@ import { searchRepoTool } from './tools/search_repo';
 import { commentOnPrTool } from './tools/comment_on_pr';
 import { createIssueTool } from './tools/create_issue';
 import { runTestsTool } from './tools/run_tests';
+import { readFileChunkTool } from './tools/read_file_chunk';
+import { getRepoTreeTool } from './tools/get_repo_tree';
 import { filesResource } from './resources/files';
 import { commitsResource } from './resources/commits';
 import { issuesResource } from './resources/issues';
@@ -25,13 +27,15 @@ export interface MCPPrompt {
 
 // All tools exposed to the Claude agent (tools + resources are both callable)
 const TOOLS: MCPTool[] = [
+  getRepoTreeTool,
   searchRepoTool,
-  commentOnPrTool,
-  createIssueTool,
-  runTestsTool,
+  readFileChunkTool,
   filesResource,
   commitsResource,
   issuesResource,
+  commentOnPrTool,
+  createIssueTool,
+  runTestsTool,
 ];
 
 const PROMPTS: MCPPrompt[] = [

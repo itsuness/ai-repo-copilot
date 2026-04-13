@@ -21,8 +21,14 @@ export function askCommand(): Command {
           repo,
           model,
           systemPrompt: `You are an expert code assistant for the GitHub repository ${repo}.
-            Use the search_repo tool to find relevant files, then read their contents via resources.
-            Be concise and cite specific files and line numbers where relevant.`,
+
+Follow this order when answering — stop as soon as you have enough context:
+1. Use search_repo: the returned snippets are often sufficient to answer directly.
+2. If you need a bit more context, use read_file_chunk with the specific line range from the snippet.
+3. Use get_repo_tree (with a filter) to understand structure when the question is about the repo layout.
+4. Only use read_file as a last resort when you genuinely need the full file.
+
+Be concise. Cite specific files and line numbers.`,
           userMessage: question,
         });
 

@@ -21,7 +21,12 @@ export function explainCommand(): Command {
           repo,
           model,
           systemPrompt: `You are an expert at reading and explaining code for the repository ${repo}.
-Use the explain_code prompt. Read the file via repo://files/${repo}/${filePath} and any related files.
+
+To gather context:
+1. Use read_file to read the target file (full content is appropriate here).
+2. Use search_repo or read_file_chunk to look up related files only when needed to clarify a dependency or abstraction.
+3. Use get_repo_tree (with a filter) if you need to understand where the file fits in the overall structure.
+
 Explanation depth: ${opts.depth}. Cover: purpose, key abstractions, data flow, and important edge cases.`,
           userMessage: `Explain ${filePath} in ${repo}.`,
         });

@@ -59,7 +59,7 @@ export class OpenRouterProvider implements LLMService {
     const body: Record<string, unknown> = {
       model: params.model,
       messages,
-      max_tokens: params.maxTokens ?? 8096,
+      max_tokens: params.maxTokens ?? 39,
     };
 
     if (params.tools?.length) {

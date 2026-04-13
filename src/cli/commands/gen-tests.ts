@@ -28,7 +28,12 @@ export function genTestsCommand(): Command {
           repo,
           model,
           systemPrompt: `You are a test engineer for the repository ${repo}.
-Use the generate_tests prompt. Read the target file and any existing tests via resources.
+
+To gather context:
+1. Use read_file to read the target file in full — you need complete signatures and logic to generate tests.
+2. Use search_repo to find existing test files for this module so you can match style and coverage.
+3. Use read_file_chunk to inspect only the relevant parts of existing test files.
+
 Generate comprehensive tests using ${opts.framework}. Cover: happy paths, edge cases, error handling.
 Output ONLY valid test code with no explanation — the output will be written directly to a file.`,
           userMessage: `Generate ${opts.framework} tests for ${filePath} in ${repo}.`,

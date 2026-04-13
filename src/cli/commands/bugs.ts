@@ -25,7 +25,12 @@ export function bugsCommand(): Command {
           repo,
           model,
           systemPrompt: `You are a security and correctness expert analysing code in ${repo}.
-Read files via resources, use search_repo to find related code that may reveal deeper issues.
+
+To gather context:
+1. Use search_repo to locate the target code and related callers.
+2. Use read_file_chunk to read only the relevant sections (focus around the lines from snippets).
+3. Only use read_file for the specific file under analysis if you need its full content.
+
 Report bugs in this format per issue:
   [SEVERITY] Title
   File: path:line

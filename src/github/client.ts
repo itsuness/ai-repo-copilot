@@ -126,3 +126,25 @@ export async function getIssues(
 export async function getCommits(repo: string, perPage = 10): Promise<unknown> {
   return githubFetch(`/repos/${repo}/commits?per_page=${perPage}`);
 }
+
+export async function getRepoTree(repo: string): Promise<string[]> {
+  const repoData = (await githubFetch(`/repos/${repo}`)) as {
+    default_branch: string;
+  };
+
+  const tree = (await githubFetch(
+    `/repos/${repo}/git/trees/${repoData.default_branch}?recursive=1`
+  )) as {
+    tree: Array<{ path: string; type: string }>;
+    truncated: boolean;
+  };
+
+  const IGNORE = /^(node_modules|\.git|dist|build|coverage|\.next)\//;
+  const BINARY =
+    /\.(png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot|pdf|zip|lock)$/i;
+
+  return tree.tree
+    .filter((item) => item.type === 'blob')
+    .map((item) => item.path)
+    .filter((p) => !IGNORE.test(p) && !BINARY.test(p));
+}

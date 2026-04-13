@@ -25,8 +25,15 @@ export function reviewCommand(): Command {
           repo,
           model,
           systemPrompt: `You are a senior engineer performing a thorough code review for ${repo}.
-Use the review_pr prompt, read changed files via resources, and comment_on_pr if issues are found.
-Structure your review with: Summary, Issues (critical/minor), Suggestions, and Verdict. ${focus}`,
+
+To gather context:
+1. The PR diff already contains the changed lines — start your analysis from it.
+2. Use read_file_chunk to look up surrounding context for specific changed functions when needed.
+3. Use search_repo to find callers or related code that the change may affect.
+4. Only use read_file when you need the full pre-change version of a file for deep analysis.
+
+Structure your review with: Summary, Issues (critical/minor), Suggestions, and Verdict. ${focus}
+Use comment_on_pr to post findings directly on the PR.`,
           userMessage: `Please review pull request #${opts.pr} in ${repo}.`,
         });
 
