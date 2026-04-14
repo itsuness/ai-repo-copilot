@@ -4,6 +4,7 @@ import { createIssueTool } from './tools/create_issue';
 import { runTestsTool } from './tools/run_tests';
 import { readFileChunkTool } from './tools/read_file_chunk';
 import { getRepoTreeTool } from './tools/get_repo_tree';
+import { getPrDiffTool } from './tools/get_pr_diff';
 import { filesResource } from './resources/files';
 import { commitsResource } from './resources/commits';
 import { issuesResource } from './resources/issues';
@@ -27,6 +28,7 @@ export interface MCPPrompt {
 
 // All tools exposed to the Claude agent (tools + resources are both callable)
 const TOOLS: MCPTool[] = [
+  getPrDiffTool,
   getRepoTreeTool,
   searchRepoTool,
   readFileChunkTool,

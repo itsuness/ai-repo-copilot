@@ -6,11 +6,16 @@
 // Available providers (add more in src/llm/providers/):
 //   OpenRouterProvider  →  any model on https://openrouter.ai/models
 
+import { GroqProvider } from './providers/groq';
 import { OpenRouterProvider } from './providers/openrouter';
 import type { LLMService } from './types';
 
 // ─────────────────────────────────────────────────────────────────────────────
-const provider: LLMService = new OpenRouterProvider();
+// const provider: LLMService = new OpenRouterProvider();
+// ─────────────────────────────────────────────────────────────────────────────
+
+// ─────────────────────────────────────────────────────────────────────────────
+const provider: LLMService = new GroqProvider();
 // ─────────────────────────────────────────────────────────────────────────────
 
 export function getLLMService(): LLMService {

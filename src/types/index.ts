@@ -9,6 +9,8 @@ export interface AgentRunOptions {
   model: string;
   systemPrompt: string;
   userMessage: string;
+  /** Restrict the agent to this subset of tool names. Defaults to all tools. */
+  allowedTools?: string[];
 }
 
 export interface CommandContext {

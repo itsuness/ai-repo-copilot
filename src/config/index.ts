@@ -4,6 +4,7 @@ export interface AppConfig {
   githubToken: string;
   openrouterApiKey: string;
   geminiApiKey: string;
+  groqApiKey: string;
   defaultRepo?: string;
   defaultModel: string;
   logLevel: string;
@@ -18,6 +19,8 @@ export async function loadConfig(): Promise<AppConfig> {
 
   if (!process.env.GITHUB_TOKEN) missing.push('GITHUB_TOKEN');
   if (!process.env.OPENROUTER_API_KEY) missing.push('OPENROUTER_API_KEY');
+  if (!process.env.GEMINI_API_KEY) missing.push('GEMINI_API_KEY');
+  if (!process.env.GROQ_API_KEY) missing.push('GROQ_API_KEY');
 
   if (missing.length > 0) {
     throw new Error(
@@ -30,6 +33,7 @@ export async function loadConfig(): Promise<AppConfig> {
     githubToken: process.env.GITHUB_TOKEN!,
     openrouterApiKey: process.env.OPENROUTER_API_KEY!,
     geminiApiKey: process.env.GEMINI_API_KEY ?? '',
+    groqApiKey: process.env.GROQ_API_KEY ?? '',
     defaultRepo: process.env.DEFAULT_REPO,
     defaultModel: process.env.DEFAULT_MODEL ?? 'claude-sonnet-4-5',
     logLevel: process.env.LOG_LEVEL ?? 'info',

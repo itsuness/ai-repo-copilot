@@ -7,14 +7,17 @@ import type { AgentRunOptions } from '../types';
 const MAX_ITERATIONS = 10; // safety ceiling — prevents runaway loops
 
 export async function runAgent(options: AgentRunOptions): Promise<string> {
-  const { repo, model, systemPrompt, userMessage } = options;
+  const { repo, model, systemPrompt, userMessage, allowedTools } = options;
 
   const llm = getLLMService();
   const mcpClient = await createMCPClient();
 
   // Build the tool list from the in-process MCP server
   const mcpTools = await mcpClient.listTools();
-  const tools: LLMTool[] = mcpTools.map((t) => ({
+  const filteredTools = allowedTools
+    ? mcpTools.filter((t) => allowedTools.includes(t.name))
+    : mcpTools;
+  const tools: LLMTool[] = filteredTools.map((t) => ({
     name: t.name,
     description: t.description,
     parameters: t.inputSchema,
