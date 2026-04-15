@@ -15,7 +15,8 @@
     "typescript": "^5"
   },
   "scripts": {
-    "prepare": "husky"
+    "prepare": "husky",
+    "test": "bun test"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.86.0",
