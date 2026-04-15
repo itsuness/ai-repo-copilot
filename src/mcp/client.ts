@@ -1,35 +1,16 @@
+import { Client } from '@modelcontextprotocol/sdk/client/index.js';
+import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js';
 import { createMCPServer } from './server';
 
-export interface MCPClient {
-  listTools(): Promise<
-    Array<{
-      name: string;
-      description?: string;
-      inputSchema: Record<string, unknown>;
-    }>
-  >;
-  callTool(name: string, input: Record<string, unknown>): Promise<unknown>;
-  close(): Promise<void>;
-}
-
-export async function createMCPClient(): Promise<MCPClient> {
+export async function createMCPClient(): Promise<Client> {
   const server = createMCPServer();
+  const [serverTransport, clientTransport] =
+    InMemoryTransport.createLinkedPair();
 
-  return {
-    async listTools() {
-      return server.listTools().map((t) => ({
-        name: t.name,
-        description: t.description,
-        inputSchema: t.inputSchema,
-      }));
-    },
+  await server.connect(serverTransport);
 
-    async callTool(name: string, input: Record<string, unknown>) {
-      return server.callTool(name, input);
-    },
+  const client = new Client({ name: 'repo-copilot-agent', version: '1.0.0' });
+  await client.connect(clientTransport);
 
-    async close() {
-      // In-process server — nothing to tear down
-    },
-  };
+  return client;
 }

@@ -3,6 +3,7 @@ import { createMCPClient } from '../mcp/client';
 import { getLLMService } from '../llm/service';
 import type { LLMMessage, LLMTool, LLMToolCall } from '../llm/types';
 import type { AgentRunOptions } from '../types';
+import type { Client } from '@modelcontextprotocol/sdk/client/index.js';
 
 const MAX_ITERATIONS = 10; // safety ceiling — prevents runaway loops
 
@@ -12,15 +13,20 @@ export async function runAgent(options: AgentRunOptions): Promise<string> {
   const llm = getLLMService();
   const mcpClient = await createMCPClient();
 
-  // Build the tool list from the in-process MCP server
-  const mcpTools = await mcpClient.listTools();
+  // Fetch tool list from the MCP server via the official SDK
+  const { tools: mcpTools } = await mcpClient.listTools();
   const filteredTools = allowedTools
     ? mcpTools.filter((t) => allowedTools.includes(t.name))
     : mcpTools;
   const tools: LLMTool[] = filteredTools.map((t) => ({
     name: t.name,
     description: t.description,
-    parameters: t.inputSchema,
+    // Strip `additionalProperties` added by z.looseObject — it serialises as
+    // `{}` in Zod v4's JSON schema output and causes Llama/Groq to generate
+    // malformed XML-style function calls instead of proper JSON.
+    parameters: stripAdditionalProperties(
+      t.inputSchema as Record<string, unknown>
+    ),
   }));
 
   logger.debug(
@@ -88,11 +94,21 @@ export async function runAgent(options: AgentRunOptions): Promise<string> {
   );
 }
 
+// ── Schema sanitisation ───────────────────────────────────────────────────────
+
+function stripAdditionalProperties(
+  schema: Record<string, unknown>
+): Record<string, unknown> {
+  const { additionalProperties, ...rest } = schema;
+  void additionalProperties; // intentionally removed
+  return rest;
+}
+
 // ── Tool execution ────────────────────────────────────────────────────────────
 
 async function executeToolCalls(
   toolCalls: LLMToolCall[],
-  mcpClient: Awaited<ReturnType<typeof createMCPClient>>,
+  mcpClient: Client,
   repo: string
 ): Promise<LLMMessage[]> {
   const results: LLMMessage[] = [];
@@ -102,16 +118,29 @@ async function executeToolCalls(
 
     try {
       // Inject repo so tools never need it passed explicitly
-      const input = { ...call.arguments, repo };
-      const result = await mcpClient.callTool(call.name, input);
+      const args = { ...call.arguments, repo };
+      const result = await mcpClient.callTool({
+        name: call.name,
+        arguments: args,
+      });
 
-      logger.debug(`Tool ${call.name} succeeded`);
+      if (result.isError) {
+        logger.debug(`Tool ${call.name} returned an error`);
+      } else {
+        logger.debug(`Tool ${call.name} succeeded`);
+      }
+
+      // Extract text from MCP content blocks
+      const blocks = result.content as Array<{ type: string; text?: string }>;
+      const text = blocks
+        .filter((c) => c.type === 'text')
+        .map((c) => c.text ?? '')
+        .join('\n');
 
       results.push({
         role: 'tool',
         toolCallId: call.id,
-        content:
-          typeof result === 'string' ? result : JSON.stringify(result, null, 2),
+        content: text,
       });
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
